@@ -61,7 +61,15 @@ pip install -r requirements.txt
 python main.py
 ```
 
-启动后访问 `http://localhost:9090`，首次使用需在设置中配置 API Key。
+启动后访问 `http://localhost:9090`。
+
+### 配置 API Key
+
+本项目目前仅支持 **Google Gemini** 作为 AI 引擎，推荐使用 **AI Studio** 模式：
+
+1. 前往 [Google AI Studio](https://aistudio.google.com/apikey) 免费申请 API Key
+2. 启动程序后点击右上角设置图标
+3. 选择连接模式为「AI Studio」，粘贴你的 API Key，保存即可
 
 ## 打包为可执行文件
 
