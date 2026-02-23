@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+dist/
+build/
+
+# 用户数据与密钥
+data/settings.json
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data/courses/
+
+# 日志与临时文件
+server_err.txt
+server_out.txt
+test_result.txt
+*.log
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 环境
+.env
+.env.*
+venv/
+.venv/
+.venv312/
+
+# PyInstaller
+EduChat.spec
+build.bat
+
+# 调试/临时文件
+debug_messages.txt
+seed_*.txt
+educhat_error.log
+$null
+startup_err.log
+
+# 通知去重
+data/.notified_keys.json
+
+# CodeBuddy
+.codebuddy/

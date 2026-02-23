@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduChat - 提瓦特学院</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@13.0.3/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css?v=10">
+</head>
+<body>
+    <!-- Main Layout -->
+    <div id="appLayout" class="app-layout">
+        <!-- Top Navigation - Genshin Navbar -->
+        <nav class="navbar">
+            <div class="navbar-left">
+                <button id="sidebarToggle" class="sidebar-toggle" title="收起侧边栏">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                </button>
+                <div class="app-logo">
+                    <div class="logo-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="url(#logoGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#9A7A2E"/><stop offset="100%" style="stop-color:#C49934"/></linearGradient></defs>
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                        </svg>
+                    </div>
+                    <span class="app-name">EduChat</span>
+                </div>
+            </div>
+
+            <!-- Course Tabs -->
+            <button id="courseTabScrollLeft" class="course-tab-scroll course-tab-scroll-left" title="向左滚动" style="display:none">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="course-tabs" id="courseTabs"></div>
+            <button id="courseTabScrollRight" class="course-tab-scroll course-tab-scroll-right" title="向右滚动" style="display:none">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
+            </button>
+            <button id="addCourseBtn" class="course-tab-add" title="新建课程">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+
+            <div class="navbar-right">
+                <a href="/schedule" class="nav-btn schedule-nav-btn" title="每日委托">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span id="scheduleCount" class="schedule-badge" style="display:none">0</span>
+                </a>
+                <span id="geminiStatus" class="connection-status">
+                    <span class="status-dot"></span>
+                </span>
+                <button id="settingsBtn" class="nav-btn" title="设置">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Left Sidebar - Adventurer's Handbook -->
+            <aside class="sidebar" id="sidebar">
+                <!-- Memory Panel Section -->
+                <div class="sidebar-section">
+                    <div class="section-header" onclick="toggleSection('memory')">
+                        <div class="section-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            冒险手册
+                        </div>
+                        <span id="memoryCourseIndicator" class="memory-course-indicator"></span>
+                    </div>
+                    <div class="section-body" id="memory-body">
+                        <div id="memoryContent">
+                            <!-- Course Info -->
+                            <div class="memory-card">
+                                <div class="memory-card-title">课程信息</div>
+                                <div id="courseInfoDisplay">
+                                    <div class="memory-field">
+                                        <span class="field-label">课程</span>
+                                        <span class="field-value">未选择</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Learning Progress -->
+                            <div class="memory-card">
+                                <div class="memory-card-title">冒险等阶</div>
+                                <div class="progress-ring-container">
+                                    <div class="progress-ring">
+                                        <svg viewBox="0 0 100 100">
+                                            <circle class="progress-bg" cx="50" cy="50" r="42"/>
+                                            <circle id="progressCircle" class="progress-fill" cx="50" cy="50" r="42" style="stroke-dashoffset: 264;"/>
+                                        </svg>
+                                        <div id="progressText" class="progress-text">0%</div>
+                                    </div>
+                                    <div class="progress-info">
+                                        <div id="progressDetails" class="progress-phase">暂无数据</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Teaching Plan -->
+                            <div class="memory-card">
+                                <div class="memory-card-title">冒险之证 · 教学计划
+                                    <button id="editMemoryBtn" class="plan-edit-icon" title="编辑冒险手册">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    </button>
+                                </div>
+                                <div id="planDisplay">
+                                    <div style="font-size:11px;color:var(--text-muted)">暂无教学计划</div>
+                                </div>
+                            </div>
+
+                            <!-- Knowledge Points -->
+                            <div class="memory-card">
+                                <div class="memory-card-title">
+                                    命之座 · 知识点
+                                    <span id="kpCountBadge" class="card-badge"></span>
+                                </div>
+                                <div id="knowledgeDisplay" class="knowledge-points-list">
+                                    <div style="font-size:11px;color:var(--text-muted)">暂无知识点数据</div>
+                                </div>
+                            </div>
+
+                            <!-- Schedule Preview -->
+                            <div class="memory-card">
+                                <div class="memory-card-title">每日委托 · 近期日程</div>
+                                <div id="schedulePreview" class="schedule-list">
+                                    <div style="font-size:11px;color:var(--text-muted)">暂无近期日程</div>
+                                </div>
+                                <a href="/schedule" class="view-schedule-btn">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    查看完整委托面板
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- References Section -->
+                <div class="sidebar-section">
+                    <div class="section-header" onclick="toggleSection('references')">
+                        <div class="section-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            参考资料
+                        </div>
+                        <span id="refCountBadge" class="ref-count-badge"></span>
+                    </div>
+                    <div class="section-body" id="references-body">
+                        <label class="upload-ref-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            上传参考资料
+                            <input type="file" id="refUploadInput" multiple hidden>
+                        </label>
+                        <div id="referencesList" class="ref-file-list"></div>
+                        <div id="refActionsBar" class="ref-actions-bar" style="display:none">
+                            <label class="ref-select-all">
+                                <input type="checkbox" id="refSelectAll">
+                                <span>全选</span>
+                            </label>
+                            <span id="refSelectedCount" class="ref-selected-count"></span>
+                            <button id="processAllRefsBtn" class="ref-process-all-btn" title="解析所有未解析的资料">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><polyline points="21 3 21 12 12 12"/></svg>
+                                全部解析
+                            </button>
+                            <button id="generatePlanBtn" class="ref-generate-plan-btn" disabled>
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                                生成学习计划
+                            </button>
+                        </div>
+                        <div id="refDropZone" class="ref-drop-zone">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span>拖放或点击上传</span>
+                            <span class="ref-drop-hint">支持 PDF · 图片 · 音频</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Archive Section -->
+                <div class="sidebar-section">
+                    <div class="section-header" onclick="toggleSection('archive')">
+                        <div class="section-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
+                            学习档案
+                        </div>
+                    </div>
+                    <div class="section-body" id="archive-body">
+                        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;padding:0 4px">长期保存的完整学习数据，包括历史成绩、复习记录、错题归档和记忆快照。</div>
+                        <button id="openArchiveBtn" class="view-schedule-btn" onclick="openArchiveViewer()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
+                            查看学习档案
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Chat Area -->
+            <main class="chat-area">
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state" style="display:none">
+                    <div class="empty-diamond">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                        </svg>
+                    </div>
+                    <h2>欢迎来到 EduChat</h2>
+                    <p>点击顶部 "+" 创建你的第一个课程，开始智能学习之旅</p>
+                </div>
+
+                <!-- Messages Container -->
+                <div id="chatMessages" class="messages-container" style="display:none"></div>
+
+                <!-- Input Area -->
+                <div id="chatInputArea" class="input-area" style="display:none">
+                    <!-- Mode Indicator -->
+                    <div id="modeIndicator" class="active-mode-bar" style="display:none">
+                        <span id="modeIndicatorText"></span>
+                        <button id="modeCancelBtn" class="mode-exit-btn" title="退出模式">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Quick Action Buttons -->
+                    <div class="quick-actions">
+                        <button class="quick-btn mode-btn" data-mode="normal">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            普通对话
+                        </button>
+                        <button class="quick-btn mode-btn homework-mode-btn" data-mode="homework_check">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                            派遣探索
+                        </button>
+                        <button class="quick-btn mode-btn exam-mode-btn" data-mode="exam_analysis">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                            深境螺旋
+                        </button>
+
+                    </div>
+
+                    <!-- Model & Tool Selector (Gemini 风格) -->
+                    <div class="model-tool-bar">
+                        <div class="model-selector" id="modelSelector">
+                            <button class="model-selector-btn" id="modelSelectorBtn" title="选择模型">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                                <span id="currentModelName">Gemini 2.5 Flash</span>
+                                <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                            </button>
+                            <div class="model-dropdown" id="modelDropdown"></div>
+                        </div>
+                        <div class="tool-toggles" id="toolToggles"></div>
+                    </div>
+
+                    <!-- File Preview -->
+                    <div id="filePreview" class="attachments-preview" style="display:none"></div>
+
+                    <!-- Input Row -->
+                    <div class="input-row">
+                        <label class="attach-btn" title="添加附件 (图片/文件/音频)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            <input type="file" id="chatFileInput" multiple hidden>
+                        </label>
+                        <div class="input-wrapper" id="inputWrapper">
+                            <textarea id="chatInput" class="chat-input" placeholder="输入消息... 支持拖拽图片/文件，或 Ctrl+V 粘贴图片" rows="1"></textarea>
+                            <div class="drag-overlay" id="dragOverlay">
+                                <div class="drag-overlay-content">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    <span>拖放文件到此处</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="sendBtn" class="send-btn" title="发送">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </button>
+                    </div>
+                    <div class="input-hints">
+                        <span>支持：图片 · PDF · 音频 · 拖拽上传 · Ctrl+V 粘贴</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>旅行者设置</h2>
+                <button id="closeSettingsBtn" class="modal-close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Gemini Connection -->
+                <div class="settings-group">
+                    <div class="settings-group-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                        Gemini API
+                    </div>
+                    <div class="connection-tabs">
+                        <button class="conn-tab active" data-mode="ai_studio">AI Studio</button>
+                        <button class="conn-tab" data-mode="vertex_ai">Vertex AI</button>
+                        <button class="conn-tab" data-mode="openai_compat">OpenAI 兼容</button>
+                        <button class="conn-tab" data-mode="custom_endpoint">自定义端点</button>
+                    </div>
+
+                    <!-- AI Studio -->
+                    <div class="conn-panel active" data-panel="ai_studio">
+                        <div class="form-group">
+                            <label>API Key</label>
+                            <div class="input-with-toggle">
+                                <input type="password" id="aiStudioKey" class="form-input" placeholder="输入 AI Studio API Key">
+                                <button class="toggle-visibility" title="显示/隐藏">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>模型</label>
+                            <select id="aiStudioModel" class="form-select model-select"></select>
+                        </div>
+                    </div>
+
+                    <!-- Vertex AI -->
+                    <div class="conn-panel" data-panel="vertex_ai">
+                        <div class="form-group">
+                            <label>GCP 项目 ID</label>
+                            <input type="text" id="vertexProject" class="form-input" placeholder="your-project-id">
+                        </div>
+                        <div class="form-group">
+                            <label>区域</label>
+                            <input type="text" id="vertexLocation" class="form-input" placeholder="us-central1" value="us-central1">
+                        </div>
+                        <div class="form-group">
+                            <label>模型</label>
+                            <select id="vertexModel" class="form-select model-select"></select>
+                        </div>
+                    </div>
+
+                    <!-- OpenAI Compatible -->
+                    <div class="conn-panel" data-panel="openai_compat">
+                        <div class="form-group">
+                            <label>API Key</label>
+                            <input type="password" id="openaiKey" class="form-input" placeholder="API Key">
+                        </div>
+                        <div class="form-group">
+                            <label>Base URL</label>
+                            <input type="text" id="openaiBaseUrl" class="form-input" value="https://generativelanguage.googleapis.com/v1beta/openai/">
+                        </div>
+                        <div class="form-group">
+                            <label>模型</label>
+                            <select id="openaiModel" class="form-select model-select"></select>
+                        </div>
+                    </div>
+
+                    <!-- Custom Endpoint -->
+                    <div class="conn-panel" data-panel="custom_endpoint">
+                        <div class="form-group">
+                            <label>API Key</label>
+                            <input type="password" id="customKey" class="form-input" placeholder="API Key">
+                        </div>
+                        <div class="form-group">
+                            <label>Base URL</label>
+                            <input type="text" id="customBaseUrl" class="form-input" placeholder="https://your-proxy.com/v1/">
+                        </div>
+                        <div class="form-group">
+                            <label>SDK 类型</label>
+                            <select id="customBackend" class="form-select">
+                                <option value="openai">OpenAI SDK</option>
+                                <option value="genai">Google GenAI SDK</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>模型</label>
+                            <select id="customModel" class="form-select model-select"></select>
+                        </div>
+                    </div>
+
+                    <div class="settings-actions" style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--glass-border)">
+                        <span id="connectionStatus" style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:6px">
+                            <span class="status-dot-sm offline" style="width:8px;height:8px;border-radius:50%;background:#999"></span> 未连接
+                        </span>
+                        <button id="testConnectionBtn" class="test-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                            测试连接
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 邮件提醒 Settings -->
+                <div class="settings-group">
+                    <div class="settings-group-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        邮件提醒
+                    </div>
+                    <div class="form-group">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px">
+                            <input type="checkbox" id="imessageEnabled" style="accent-color:var(--gold);width:16px;height:16px">
+                            <span>启用邮件提醒</span>
+                        </label>
+                    </div>
+                    <div id="imessageFields" style="display:none">
+                        <div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--text-secondary)">
+                            <span style="color:var(--text-gold);font-weight:500">✦ SMTP 配置说明</span><br>
+                            <span style="color:var(--text-muted)">QQ邮箱: smtp.qq.com:587 · 163邮箱: smtp.163.com:587 · Gmail: smtp.gmail.com:587</span><br>
+                            <span style="color:var(--text-muted)">密码请使用邮箱的<b style="color:var(--text-gold)">授权码</b>，非登录密码</span>
+                        </div>
+                        <div class="form-group" style="display:flex;gap:8px">
+                            <div style="flex:2">
+                                <label>SMTP 服务器</label>
+                                <input type="text" id="smtpHost" class="form-input" placeholder="smtp.qq.com">
+                            </div>
+                            <div style="flex:1">
+                                <label>端口</label>
+                                <input type="number" id="smtpPort" class="form-input" placeholder="587" value="587">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>SMTP 用户名</label>
+                            <input type="text" id="smtpUser" class="form-input" placeholder="your_email@qq.com">
+                        </div>
+                        <div class="form-group">
+                            <label>SMTP 密码 / 授权码</label>
+                            <input type="password" id="smtpPass" class="form-input" placeholder="邮箱授权码">
+                        </div>
+                        <div class="form-group">
+                            <label>接收邮箱</label>
+                            <input type="email" id="toEmail" class="form-input" placeholder="receiver@qq.com">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="testImessageBtn" class="quick-btn" style="width:100%;justify-content:center" onclick="testImessage()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                发送测试邮件
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding-top:16px;display:flex;justify-content:flex-end">
+                    <button id="saveSettingsBtn" class="init-course-btn" style="width:auto;padding:10px 24px">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        保存设置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Course Modal -->
+    <div id="courseModal" class="modal-overlay">
+        <div class="modal-content" style="max-width:480px">
+            <div class="modal-header">
+                <h2>添加课程</h2>
+                <button id="closeCourseModalBtn" class="modal-close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>课程名称</label>
+                    <input type="text" id="courseNameInput" class="form-input" placeholder="例如：AP 微积分 AB">
+                </div>
+                <div class="form-group">
+                    <label>元素属性</label>
+                    <div id="elementPicker" class="color-picker-row">
+                        <button class="color-swatch active" data-element="pyro" style="background:#E2604A" title="火元素 · Pyro"></button>
+                        <button class="color-swatch" data-element="hydro" style="background:#3A9FD4" title="水元素 · Hydro"></button>
+                        <button class="color-swatch" data-element="electro" style="background:#9B5FD4" title="雷元素 · Electro"></button>
+                        <button class="color-swatch" data-element="dendro" style="background:#5EA83F" title="草元素 · Dendro"></button>
+                        <button class="color-swatch" data-element="cryo" style="background:#52B5C4" title="冰元素 · Cryo"></button>
+                        <button class="color-swatch" data-element="anemo" style="background:#53B89A" title="风元素 · Anemo"></button>
+                        <button class="color-swatch" data-element="geo" style="background:#C49934" title="岩元素 · Geo"></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>自定义指令（可选）</label>
+                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;line-height:1.4">定义 AI 助手的行为方式，例如教学风格、语气偏好、专注领域等。类似 Gemini Gems 的自定义指令。</div>
+                    <textarea id="courseDescInput" class="form-input" rows="4" placeholder="例如：&#10;• 你是一位擅长用生活实例解释数学概念的老师&#10;• 每次讲解后用苏格拉底式提问引导思考&#10;• 回答时使用中英双语对照术语&#10;• 重点关注应试技巧和解题速度" style="resize:vertical;min-height:80px;font-size:12px;line-height:1.5"></textarea>
+                </div>
+
+                <!-- 继承档案区域 -->
+                <div class="course-create-divider"><span>知识继承（可选）</span></div>
+                <div class="form-group">
+                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:8px;line-height:1.4">
+                        选择已有课程作为先修背景，AI 将了解学生过去的学习积累与能力特点，但新课程的知识点和题库从空白开始。
+                    </div>
+                    <div id="inheritSourceList" class="inherit-source-list">
+                        <!-- 动态填充 -->
+                    </div>
+                    <div id="inheritPreview" class="inherit-preview" style="display:none">
+                        <!-- 继承预览信息 -->
+                    </div>
+                </div>
+
+                <div style="padding-top:16px;display:flex;justify-content:flex-end">
+                    <button id="createCourseBtn" class="init-course-btn" style="width:auto;padding:10px 24px">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        创建课程
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Memory Edit Modal -->
+    <div id="memoryEditModal" class="modal-overlay">
+        <div class="modal-content" style="max-width:700px">
+            <div class="modal-header">
+                <h2>编辑冒险手册</h2>
+                <button id="closeMemoryEditBtn" class="modal-close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea id="memoryEditArea" style="width:100%;background:var(--bg-lightest);border:1px solid var(--glass-border);border-radius:8px;color:var(--text-primary);font-size:13px;font-family:'Consolas','Fira Code',monospace;padding:12px;outline:none;resize:vertical;line-height:1.6" rows="20"></textarea>
+                <div style="padding-top:16px;display:flex;justify-content:flex-end">
+                    <button id="saveMemoryEditBtn" class="init-course-btn" style="width:auto;padding:10px 24px">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Instruction Edit Modal -->
+    <div id="instructionEditModal" class="modal-overlay">
+        <div class="modal-content" style="max-width:520px">
+            <div class="modal-header">
+                <h2>✦ 编辑自定义指令</h2>
+                <button id="closeInstructionEditBtn" class="modal-close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="font-size:11px;color:var(--text-secondary);margin-bottom:10px;line-height:1.5">定义 AI 助手的行为方式。这些指令会在每次对话时注入系统提示词中，AI 将严格遵守。</div>
+                <textarea id="instructionEditArea" class="form-input" rows="8" placeholder="例如：&#10;• 你是一位擅长用生活实例解释数学概念的老师&#10;• 每次讲解后用苏格拉底式提问引导思考&#10;• 回答时使用中英双语对照术语&#10;• 重点关注应试技巧和解题速度" style="resize:vertical;min-height:120px;font-size:12px;line-height:1.6;width:100%"></textarea>
+                <div style="padding-top:16px;display:flex;justify-content:flex-end">
+                    <button id="saveInstructionBtn" class="init-course-btn" style="width:auto;padding:10px 24px">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        保存指令
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove Course Confirm Modal (soft delete) -->
+    <div id="deleteCourseModal" class="modal-overlay">
+        <div class="modal-content" style="max-width:420px">
+            <div class="modal-header" style="border-bottom:2px solid var(--warning)">
+                <h2 style="color:var(--gold-dark)">◆ 移除课程</h2>
+                <button id="closeDeleteCourseBtn" class="modal-close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align:center;padding:24px 20px">
+                <div style="font-size:36px;margin-bottom:12px">📦</div>
+                <div id="deleteCourseMsg" style="font-size:14px;color:var(--text-primary);font-weight:500;margin-bottom:8px"></div>
+                <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:20px;padding:10px;background:rgba(212,168,83,0.06);border-radius:8px;border:1px solid rgba(212,168,83,0.15)">
+                    课程将从顶部标签栏中移除，但<strong style="color:var(--gold-dark)">学习数据会保留</strong>。<br>
+                    你可以在「新建课程 → 知识继承」中继续使用该课程的数据。<br>
+                    如需永久删除，请在新建课程面板的继承列表中操作。
+                </div>
+                <div style="display:flex;gap:10px;justify-content:center">
+                    <button id="cancelDeleteCourseBtn" class="reminder-btn secondary" style="flex:1;max-width:140px">取消</button>
+                    <button id="confirmDeleteCourseBtn" class="reminder-btn" style="flex:1;max-width:180px;background:var(--gold-gradient-btn);color:#fff;border:none">
+                        确认移除
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive Modal -->
+    <div id="archiveModal" class="modal-overlay">
+        <div class="modal-content" style="max-width:720px">
+            <div class="modal-header">
+                <h2>✦ 学习档案</h2>
+                <button id="closeArchiveBtn" class="modal-close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body" style="padding:0">
+                <!-- Archive Tabs -->
+                <div class="archive-tabs">
+                    <button class="archive-tab active" data-tab="overview">概览</button>
+                    <button class="archive-tab" data-tab="scores">成绩记录</button>
+                    <button class="archive-tab" data-tab="reviews">复习历史</button>
+                    <button class="archive-tab" data-tab="questions">错题归档</button>
+                    <button class="archive-tab" data-tab="snapshots">记忆快照</button>
+                </div>
+                <!-- Archive Content -->
+                <div class="archive-content" id="archiveContent">
+                    <div class="archive-loading">
+                        <span style="display:flex;gap:4px;align-items:center">
+                            <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:typing 1.2s infinite"></span>
+                            <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:typing 1.2s infinite 0.2s"></span>
+                            <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:typing 1.2s infinite 0.4s"></span>
+                        </span>
+                        <span style="font-size:12px;color:var(--text-muted);margin-top:8px">加载档案数据...</span>
+                    </div>
+                </div>
+                <!-- Archive Footer -->
+                <div class="archive-footer">
+                    <button class="archive-action-btn" onclick="createManualSnapshot()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        创建快照
+                    </button>
+                    <button class="archive-action-btn" onclick="triggerImportArchive()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        导入档案
+                    </button>
+                    <button class="archive-action-btn primary" onclick="exportArchive()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        导出完整档案
+                    </button>
+                    <input type="file" id="importArchiveInput" accept=".json" style="display:none" onchange="handleImportFile(event)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Area -->
+    <div id="notificationArea" class="reminder-popup" style="transform:translateX(400px);opacity:0"></div>
+
+    <script src="/static/js/app.js?v=24"></script>
+</body>
+</html>
