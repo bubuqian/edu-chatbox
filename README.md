@@ -63,6 +63,27 @@ python main.py
 
 启动后访问 `http://localhost:9090`，首次使用需在设置中配置 API Key。
 
+## 打包为可执行文件
+
+仓库内包含 `build.bat` 和 `EduChat.spec`，可一键打包为独立的 Windows 可执行程序（无需安装 Python）。
+
+### 打包步骤
+
+```bash
+# 1. 确保已激活虚拟环境并安装了依赖
+.venv312\Scripts\activate
+
+# 2. 安装打包工具（如果还没装）
+pip install pyinstaller pywebview
+
+# 3. 双击 build.bat 或命令行执行
+build.bat
+```
+
+打包完成后输出在 `dist\EduChat\` 目录，将整个文件夹复制给对方即可使用，双击 `EduChat.exe` 启动。
+
+> 注意：打包需要 Windows 环境 + Python 3.12 虚拟环境（`.venv312`）。
+
 ## 项目结构
 
 ```
@@ -70,6 +91,8 @@ edu-chatbox/
 ├── main.py                 # 应用入口
 ├── config.py               # 集中配置
 ├── requirements.txt        # Python 依赖
+├── build.bat               # 一键打包脚本
+├── EduChat.spec            # PyInstaller 打包配置
 ├── api/
 │   └── routes.py           # 56 个 API 端点
 ├── services/

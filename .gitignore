@@ -39,9 +39,7 @@ venv/
 .venv/
 .venv312/
 
-# PyInstaller
-EduChat.spec
-build.bat
+# PyInstaller 输出（spec 和 build.bat 保留在仓库中供打包使用）
 
 # 调试/临时文件
 debug_messages.txt
